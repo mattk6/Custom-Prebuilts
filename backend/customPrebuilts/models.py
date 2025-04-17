@@ -9,6 +9,35 @@ Matthew Kruse
 
 from django.db import models
 
+
+# list of games from steam store
+class Game(models.Model):
+    steam_store_id = models.IntegerField() # Steam Store ID
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+# specification for game hardware requirement based on Spec
+class GameSpec(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    spec = models.IntegerField()
+    geforce = models.CharField(max_length=50, blank=True)
+    radeon = models.CharField(max_length=50, blank=True)
+    arc = models.CharField(max_length=50, blank=True)
+    fps = models.IntegerField(blank=True, null=True)
+    resolution = models.CharField(max_length=50, blank=True, null=True)
+    preset = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return self.game.name
+
+# game play specification, e.g. 1 = minimum, 2 = recommended
+class Spec(models.Model):
+    spec = models.IntegerField(unique=True)
+    description = models.CharField(max_length=20)
+ 
+
 class PartsGPU(models.Model):
     name = models.CharField(max_length=100)  # Graphics Card name
     manufacturer = models.CharField(max_length=50)  # manufacturer
@@ -32,10 +61,11 @@ class PartsGPU(models.Model):
     def __str__(self):
         return self.name
 
-# Model Name, Manufacturer, Core Count, Core Speed, Socket, Price, Photo (optional)
+# list of cpu models and their specs
 class PartsCPU(models.Model):
     name = models.CharField(max_length=100)  # CPU Card name
     manufacturer = models.CharField(max_length=50)  # manufacturer
+    series = models.CharField(max_length=50)  # Series
     msrp = models.FloatField(null=True, blank=True)  # MSRP
     core_count = models.PositiveIntegerField()  # Core count
     core_speed = models.FloatField(null=True, blank=True)  # core speed
@@ -49,7 +79,7 @@ class PartsCPU(models.Model):
     def __str__(self):
         return self.name
 
-# Model Name, Manufacturer, Price, RAM Speed, NVME Slot Count, Ethernet
+# list of motherboard models and their specs
 class PartsMotherboard(models.Model):
     name = models.CharField(max_length=100)  # Motherboard name
     manufacturer = models.CharField(max_length=50)  #  Manufacturer

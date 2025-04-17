@@ -8,22 +8,13 @@ customPrebuilts Urls
 
 from customPrebuilts import views
 from rest_framework.routers import DefaultRouter
-from django.urls import path
-
-from customPrebuilts.views import PartsGPURetrieveUpdateDestroyView, PartsCPURetrieveUpdateDestroyView, \
-    PartsMotherboardRetrieveUpdateDestroyView
 
 router = DefaultRouter()
-router.register("cpu", views.PartsCPUListCreateView)
-router.register("gpu", views.PartsGPUListCreateView)
-router.register("motherboard", views.PartsMotherboardListCreateView)
+router.register("cpus", views.PartsCPUViewSet, 'parts-cpus')
+router.register("gpus", views.PartsGPUViewSet, 'parts-gpus')
+router.register("motherboards", views.PartsMotherboardViewSet, 'parts-motherboards')
+router.register("games", views.GameViewSet, 'games')
+router.register("game-specs", views.GameSpecViewSet, 'game-specs')
 
 urlpatterns = router.urls
-
-urlpatterns += [
-    # Endpoints for detail, update, delete
-    path('gpu/<int:pk>/', PartsGPURetrieveUpdateDestroyView.as_view(), name='gpu-detail'),
-    path('cpu/<int:pk>/', PartsCPURetrieveUpdateDestroyView.as_view(), name='cpu-detail'),
-    path('motherboard/<int:pk>/', PartsMotherboardRetrieveUpdateDestroyView.as_view(), name='motherboard-detail'),
-]
 

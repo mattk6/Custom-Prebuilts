@@ -18,7 +18,7 @@ CSV_FILE_PATH = 'data/cpus.csv'
 
 def refresh_cpu_data():
     try:
-        with transaction.atomic():  # Ensures atomicity of the operation
+        with transaction.atomic():  
             # Step 1: Delete all existing CPUs
             print("Deleting all CPU records...")
             PartsCPU.objects.all().delete()
@@ -32,6 +32,7 @@ def refresh_cpu_data():
                     cpus.append(PartsCPU(
                         name=row['name'],
                         manufacturer=row['manufacturer'],
+                        series=row['series'],
                         msrp=float(row['msrp']) if row['msrp'] else None,
                         core_count=int(row['core_count']) if row['core_count'] else None,
                         core_speed=float(row['core_speed']) if row['core_speed'] else None,
@@ -39,7 +40,7 @@ def refresh_cpu_data():
                         socket=row['socket'],
                         photo=row['photo'] if 'photo' in row else None,
                     ))
-                PartsCPU.objects.bulk_create(cpus)  # Bulk insert for efficiency
+                PartsCPU.objects.bulk_create(cpus) 
             print("CPU data refresh complete!")
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -50,3 +51,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+ 

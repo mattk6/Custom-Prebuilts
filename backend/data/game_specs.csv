@@ -1,0 +1,11 @@
+steam_store_id,name,spec,geforce,radeon,arc,fps,resolution,preset
+1091500,Cyberpunk 2077,1,GTX 1060,RX 580 8GB,A380,--,--,--
+1091500,Cyberpunk 2077,2,RTX 2060 Super,RX 5700 XT,A770,--,--,--
+2767030,Marvel Rivals,1,GTX 1060,RX 580,A380,--,--,--
+2767030,Marvel Rivals,2,RTX 2060 Super,RX 5700 XT,A750,--,--,--
+1086940,Baldur's Gate 3,1,GTX 970,RX 480 4GB,--,--,--,--
+1086940,Baldur's Gate 3,2,RTX 2060 Super,RX 5700 XT,--,--,--,--
+2183900,"Warhammer 40,000: Space Marine 2",1,GTX 1060,RX 580 8GB,--,30,1920x1080,low
+2183900,"Warhammer 40,000: Space Marine 2",2,RTX 3070,RX 6800 XT,--,60,1920x1080,ultra
+2215430,Ghost of Tsushima Director's Cut,1,GTX 960,RX 5500 XT,--,--,--,--
+2215430,Ghost of Tsushima Director's Cut,2,RTX 2060,RX 5600 XT,--,--,--,--
