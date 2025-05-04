@@ -14,7 +14,6 @@ export function useGpuList() {
     const [gpus, setGpus] = useState([]);
     const [filteredGpus, setFilteredGpus] = useState([]);
     const [selectedGpuManufacturerFilter, setSelectedGpuManufacturerFilter] = useState("");
-    const [selectedGpuYearFilter, setSelectedGpuYearFilter] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -52,31 +51,20 @@ export function useGpuList() {
             filtered = filtered.filter(gpu => gpu.manufacturer.trim() === selectedGpuManufacturerFilter.trim());
         }
 
-       // Filter by year if one is selected (and after applying manufacturer filter)
-        if (selectedGpuYearFilter) {
-            filtered = filtered.filter(gpu => gpu.year === Number(selectedGpuYearFilter));
-        }
-
         setFilteredGpus(filtered);
-    }, [gpus, selectedGpuManufacturerFilter, selectedGpuYearFilter]);
+    }, [gpus, selectedGpuManufacturerFilter]);
 
         // Function to set the selected manufacturer and reset year
     const filterByGpuManufacturer = (manufacturer) => {
         setSelectedGpuManufacturerFilter(manufacturer);
-        setSelectedGpuYearFilter("");
     };
 
     // Function to set the selected series
-    const filterByGpuYear = (year) => {
-        setSelectedGpuYearFilter(year);
-    };
     return {
         gpus,
         filteredGpus,
         selectedGpuManufacturerFilter: selectedGpuManufacturerFilter,
-        selectedGpuYearFilter: selectedGpuYearFilter,
         filterByGpuManufacturer: filterByGpuManufacturer,
-        filterByGpuYear: filterByGpuYear,
         loading,
         error};
 }

@@ -65,7 +65,7 @@ select {
 
 .radio-group {
   display: flex;
-  gap: 10px; 
+  gap: 10px;
 }
 
 .radio-group label {
@@ -74,5 +74,47 @@ select {
 }
 
 input[type="radio"] {
-  margin-right: 5px; 
+  margin-right: 5px;
+}
+
+/* Dark Mode support */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #f0f0f0;
+  }
+
+  .container {
+    background: #1e1e1e;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  h2 {
+    color: #f0f0f0;
+  }
+
+  thead th {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border-bottom: 2px solid #444;
+  }
+
+  tbody td {
+    color: #ccc;
+  }
+
+  select {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    border: 1px solid #555;
+  }
+
+  .radio-group label {
+    color: #ccc;
+  }
+
+  input[type="radio"] {
+    accent-color: #bbb;
+  }
 }

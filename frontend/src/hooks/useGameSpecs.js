@@ -6,10 +6,9 @@
  *-----------------------------------------------------------------------*/
 
 import { API_URL } from "../constants";
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 
 export function useGameSpecs(gameId, specType) {
-
     // Create states for gameSpecs, loading, and error
     const [gameSpecs, setGameSpecs] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -49,5 +48,3 @@ export function useGameSpecs(gameId, specType) {
         error
     };
 }
-
- 

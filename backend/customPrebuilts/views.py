@@ -5,24 +5,7 @@ Matthew Kruse
 
 
 """
-
-
-from rest_framework import generics
-from rest_framework.viewsets import ModelViewSet
-
-from .models import PartsGPU, PartsCPU, PartsMotherboard
-from .serializers import PartsGPUSerializer, PartsCPUSerializer, PartsMotherboardSerializer
-
-"""
-views.py
-Matthew Kruse
-2025-04-17
-
-
-"""
-
 from rest_framework.viewsets import ReadOnlyModelViewSet
-
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 

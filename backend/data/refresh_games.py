@@ -1,3 +1,13 @@
+"""
+refresh_games.py
+Matthew Kruse
+2025-05-04
+
+ generated script to populate database
+"""
+
+
+
 import os
 import django
 import csv
@@ -55,4 +65,4 @@ def main():
 
 if __name__ == '__main__':
     main()
- 
+    

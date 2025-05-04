@@ -1,11 +1,20 @@
+"""
+refresh_game_specs.py
+Matthew Kruse
+2025-05-04
+ generated script to populate database
+
+"""
+
+
 import os
 import django
 import csv
 import sys
 
 # Add the backend directory to Python path
-sys.path.append(os.path.dirname(os.path.abspath(__file__))) 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'conf.settings')
 
@@ -18,7 +27,7 @@ CSV_FILE_PATH = 'data/game_specs.csv'
 
 def refresh_game_spec_data():
     try:
-        with transaction.atomic():  
+        with transaction.atomic():
             # Step 1: Delete all existing GameSpec records
             print("Deleting all GameSpec records...")
             GameSpec.objects.all().delete()
@@ -45,9 +54,7 @@ def refresh_game_spec_data():
                         game_specs.append(GameSpec(
                             game=game,
                             spec=int(row['spec']),
-                            geforce=row['geforce'],
-                            radeon=row['radeon'],
-                            arc=row['arc'],
+                            geforce_card_id=row['geforce'],
                             fps=fps,
                             resolution=resolution,
                             preset=preset
@@ -69,4 +76,3 @@ def main():
 
 if __name__ == '__main__':
     main()
- 

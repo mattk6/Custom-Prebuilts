@@ -22,9 +22,8 @@ class Game(models.Model):
 class GameSpec(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     spec = models.IntegerField()
-    geforce = models.CharField(max_length=50, blank=True)
-    radeon = models.CharField(max_length=50, blank=True)
-    arc = models.CharField(max_length=50, blank=True)
+    geforce_card_id = models.CharField(max_length=50, blank=True)
+    radeon_card_id = models.CharField(max_length=50, blank=True)
     fps = models.IntegerField(blank=True, null=True)
     resolution = models.CharField(max_length=50, blank=True, null=True)
     preset = models.CharField(max_length=50, blank=True, null=True)
@@ -39,42 +38,49 @@ class Spec(models.Model):
  
 
 class PartsGPU(models.Model):
-    name = models.CharField(max_length=100)  # Graphics Card name
-    manufacturer = models.CharField(max_length=50)  # manufacturer
-    msrp = models.FloatField(null=True, blank=True)  # MSRP
-    photo = models.URLField(max_length=200, null=True, blank=True) # Image / could be url....
-    year = models.IntegerField(null=True, blank=True)  # Year of release
-    fps_1080p_medium = models.CharField(max_length=50, null=True, blank=True)  # 1080p Medium FPS
-    fps_1080p_ultra = models.CharField(max_length=50, null=True, blank=True)  # 1080p Ultra FPS
-    fps_1440p_ultra = models.CharField(max_length=50, null=True, blank=True)  # 1440p Ultra FPS
-    fps_4k_ultra = models.CharField(max_length=50, null=True, blank=True)  # 4K Ultra FPS
-    gpu_chip_model = models.CharField(max_length=50)  # GPU chip model
-    cuda_cores = models.PositiveIntegerField()  # Number of CUDA cores
-    boost_clock = models.PositiveIntegerField()  # Boost clock in MHz
-    memory = models.CharField(max_length=50)  # Memory type and size (e.g., "24GB GDDR6X")
-    memory_bandwidth = models.PositiveIntegerField()  # Bandwidth in GB/s
-    power_consumption = models.PositiveIntegerField()  # Power consumption in watts
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    manufacturer = models.CharField(max_length=50)
+    msrp = models.FloatField(null=True, blank=True)
+    photo = models.URLField(max_length=200, null=True, blank=True)
+    fps_1080p_medium = models.FloatField(null=True, blank=True)
+    fps_1080p_ultra = models.FloatField(null=True, blank=True)
+    fps_1440p_ultra = models.FloatField(null=True, blank=True)
+    fps_4k_ultra = models.FloatField(null=True, blank=True)
+    gpu_chip_model = models.CharField(max_length=50)
+    cuda_cores = models.PositiveIntegerField()
+    boost_clock = models.PositiveIntegerField()
+    memory = models.CharField(max_length=50)
+    memory_bandwidth = models.PositiveIntegerField()
+    power_consumption = models.PositiveIntegerField()
 
     class Meta:
-        unique_together = ('name', 'manufacturer', 'year', 'cuda_cores', 'memory')
+        constraints = [
+            models.UniqueConstraint(name='unique_gpus',
+                fields=['name', 'manufacturer', 'cuda_cores', 'memory'])
+        ]
 
     def __str__(self):
         return self.name
 
-# list of cpu models and their specs
+# list of cpu models and their specs 
 class PartsCPU(models.Model):
-    name = models.CharField(max_length=100)  # CPU Card name
-    manufacturer = models.CharField(max_length=50)  # manufacturer
-    series = models.CharField(max_length=50)  # Series
-    msrp = models.FloatField(null=True, blank=True)  # MSRP
-    core_count = models.PositiveIntegerField()  # Core count
-    core_speed = models.FloatField(null=True, blank=True)  # core speed
-    boost_speed = models.FloatField(null=True, blank=True)  # boost speed
-    socket = models.CharField(max_length=50)  # String
-    photo = models.URLField(max_length=200, null=True, blank=True) # Image / could be url....
+    name = models.CharField(max_length=100)
+    manufacturer = models.CharField(max_length=50)
+    series = models.CharField(max_length=50, blank=True)
+    msrp = models.FloatField(null=True, blank=True)
+    core_count = models.PositiveIntegerField()
+    core_speed = models.FloatField(null=True, blank=True)
+    boost_speed = models.FloatField(null=True, blank=True)
+    socket = models.CharField(max_length=50)
+    photo = models.URLField(max_length=200, null=True, blank=True)
 
     class Meta:
-        unique_together = ('name', 'manufacturer', 'core_count', 'core_speed', 'socket', 'photo')
+        constraints = [
+            models.UniqueConstraint(name='unique_cpus',
+                fields=['name', 'manufacturer', 'core_count', 'core_speed', 'socket', 'photo'])
+        ]
+
 
     def __str__(self):
         return self.name

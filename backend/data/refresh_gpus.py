@@ -1,3 +1,13 @@
+"""
+refresh_gpus.py
+Matthew Kruse
+2025-05-04
+
+ generated scripts to populate database
+"""
+
+
+
 import os
 import django
 import csv
@@ -29,12 +39,13 @@ def refresh_gpu_data():
                 reader = csv.DictReader(csvfile)
                 gpus = []
                 for row in reader:
+                    print(f"{row}")
                     gpus.append(PartsGPU(
+                        id=row['id'],
                         name=row['name'],
                         manufacturer=row['manufacturer'],
                         msrp=row['msrp'] if row['msrp'] else None,
                         photo=row['photo'] if 'photo' in row else None,
-                        year=int(row['year']) if row['year'] else None,
                         fps_1080p_medium=row['fps_1080p_medium'] if row['fps_1080p_medium'] else None,
                         fps_1080p_ultra=row['fps_1080p_ultra'] if row['fps_1080p_ultra'] else None,
                         fps_1440p_ultra=row['fps_1440p_ultra'] if row['fps_1440p_ultra'] else None,

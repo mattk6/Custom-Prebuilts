@@ -1,11 +1,21 @@
+"""
+refresh_cpus.py
+Matthew Kruse
+2025-05-04
+
+Generated script to populate database
+"""
+
+
+
 import os
 import django
 import csv
 import sys
 
 # Add the backend directory to Python path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))  # Adds 'backend'
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # Adds parent
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'conf.settings')
 
@@ -18,7 +28,7 @@ CSV_FILE_PATH = 'data/cpus.csv'
 
 def refresh_cpu_data():
     try:
-        with transaction.atomic():  
+        with transaction.atomic():
             # Step 1: Delete all existing CPUs
             print("Deleting all CPU records...")
             PartsCPU.objects.all().delete()
@@ -40,7 +50,7 @@ def refresh_cpu_data():
                         socket=row['socket'],
                         photo=row['photo'] if 'photo' in row else None,
                     ))
-                PartsCPU.objects.bulk_create(cpus) 
+                PartsCPU.objects.bulk_create(cpus)
             print("CPU data refresh complete!")
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -51,4 +61,3 @@ def main():
 
 if __name__ == '__main__':
     main()
- 

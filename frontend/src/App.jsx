@@ -1,5 +1,4 @@
 import './App.css'
-import {useCpuList} from "./hooks/useCpus.js";
 import {useGpuList} from "./hooks/useGpus.js";
 import {useGameList} from "./hooks/useGames.js";
 import {useState, useEffect} from "react";
@@ -7,139 +6,67 @@ import {useGameSpecs} from "./hooks/useGameSpecs.js";
 
 function App() {
 
-    // CPU List hook
-    const {
-        cpus,
-        filteredCpus,
-        selectedCpuManufacturerFilter,
-        filterByCpuManufacturer,
-        filterByCpuSeries,
-        cpuLoading,
-        cpuError
-    } = useCpuList();
-
-    // GPU List hook
+    // Access backend hooks
     const {
         gpus,
         filteredGpus,
-        selectedGpuManufacturerFilter,
         filterByGpuManufacturer,
-        filterByGpuYear,
         gpuLoading,
         gpuError
     } = useGpuList();
 
-    // Game List hook
     const {
         games,
         gameLoading,
         gameError
     } = useGameList();
 
-    // Game Specs hook
-
-    // Equipment filters
-    const gpuManufacturers = [...new Set(gpus.map(gpu => gpu.manufacturer))]
-
-    const cpuManufacturers = [...new Set(cpus.map(cpu => cpu.manufacturer))]
-
-    const cpuSeriesOptions = selectedCpuManufacturerFilter
-        ? [...new Set(cpus
-            .filter(cpu => cpu.manufacturer.trim() === selectedCpuManufacturerFilter.trim())
-            .map(cpu => cpu.series))]
-        : [];
-
-    const gpuYearOptions = selectedGpuManufacturerFilter
-        ? [...new Set(gpus
-            .filter(gpu => gpu.manufacturer.trim() === selectedGpuManufacturerFilter.trim())
-            .map(gpu => gpu.year))]
-        : [];
-
-    // Selection controls
-
-    // state for drop down selections
-    const [selectedCpuManufacturer, setSelectedCpuManufacturer] = useState("")
-    const [selectedCpuSeries, setSelectedCpuSeries] = useState("")
-    const [selectedCpuModel, setSelectedCpuModel] = useState("")
-    const [selectedGpuManufacturer, setSelectedGpuManufacturer] = useState("")
-    const [selectedGpuYear, setSelectedGpuYear] = useState("")
-    const [selectedGpuModel, setSelectedGpuModel] = useState("")
-
     // Constants for the specification
     const SPEC_MINIMUM = 1;
     const SPEC_RECOMMENDED = 2;
 
-    // State for selected specification (Minimum/Recommended)
+    // Equipment filters
+    const gpuManufacturers = [...new Set(gpus.map(gpu => gpu.manufacturer))]
 
+    // Selection controls
+
+    // state for drop down selections
+    const [selectedGpuManufacturer, setSelectedGpuManufacturer] = useState("")
+    const [selectedGpuModel, setSelectedGpuModel] = useState("")
+    const [selectedGpu, setSelectedGpu] = useState(null);
+    const [selectedGame, setSelectedGame] = useState(null);
     const [selectedSpec, setSelectedSpec] = useState(SPEC_MINIMUM);
-    const [selectedDisplayResolution, setSelectedDisplayResolution] = useState("");
 
-    const [selectedGame, setSelectedGame] = useState({id: 85});
+    const { gameSpecs, gameSpecLoading, gameSpecError } = useGameSpecs(selectedGame?.id || "", selectedSpec);
 
-    const { gameSpecs, gameSpecLoading, gameSpecError } = useGameSpecs(selectedGame.id, selectedSpec);
-
-    // fetch from local storage
+    // fetch user saved om[its from local storage
     useEffect(() => {
-        const storedCpuManufacturer = localStorage.getItem("selectedCpuManufacturer");
-        if (storedCpuManufacturer) {
-            setSelectedCpuManufacturer(storedCpuManufacturer);
-            filterByCpuManufacturer(storedCpuManufacturer);
-        }
-
-        const storedCpuSeries = localStorage.getItem("selectedCpuSeries");
-        if (storedCpuSeries) {
-            setSelectedCpuSeries(storedCpuSeries);
-            filterByCpuSeries(storedCpuSeries);
-        }
-
-        const storedCpuModel = localStorage.getItem("selectedCpuModel");
-        if (storedCpuModel) {
-            setSelectedCpuModel(storedCpuModel);
-        }
-
         const storedGpuManufacturer = localStorage.getItem("selectedGpuManufacturer");
         if (storedGpuManufacturer) {
             setSelectedGpuManufacturer(storedGpuManufacturer);
             filterByGpuManufacturer(storedGpuManufacturer);
         }
 
-        const storedGpuYear = localStorage.getItem("selectedGpuYear");
-        if (storedGpuYear) {
-            setSelectedGpuYear(storedGpuYear);
-            filterByGpuYear(storedGpuYear);
-        }
         const storedGpuModel = localStorage.getItem("selectedGpuModel");
-        if (storedGpuModel) {
+        if (storedGpuModel && gpus.length > 0) {
             setSelectedGpuModel(storedGpuModel);
-        }
 
-        const storedDisplayResolution = localStorage.getItem("selectedDisplayResolution");
-        if (storedDisplayResolution) {
-            setSelectedDisplayResolution(storedDisplayResolution);
+            const gpu = gpus.find(g => String(g.id) === storedGpuModel);
+            console.log("gpus count: " + gpus.length);
+            setSelectedGpu(gpu || null);
         }
+    }, [gpus]);
 
-    }, []);
+    useEffect(() => {
+        const storedGameId = localStorage.getItem("selectedGameId");
+        if (storedGameId && games.length > 0) {
+            const game = games.find(g => String(g.id) === storedGameId) || null;
+            setSelectedGame(game);
+        }
+    }, [games]);
 
 
     // save values to local storage as values change
-    useEffect(() => {
-        if(selectedCpuManufacturer) {
-            localStorage.setItem("selectedCpuManufacturer", selectedCpuManufacturer);
-        }
-    }, [selectedCpuManufacturer]);
-
-    useEffect(() => {
-        if(selectedCpuSeries) {
-            localStorage.setItem("selectedCpuSeries", selectedCpuSeries);
-        }
-    }, [selectedCpuSeries]);
-
-    useEffect(() => {
-        if(selectedCpuModel) {
-            localStorage.setItem("selectedCpuModel", selectedCpuModel);
-        }
-    }, [selectedCpuModel]);
-
     useEffect(() => {
        if(selectedGpuManufacturer && selectedGpuManufacturer!=="") {
            console.log("Saving GPU Manufacturer:", selectedGpuManufacturer);
@@ -148,35 +75,21 @@ function App() {
     }, [selectedGpuManufacturer]);
 
     useEffect(() => {
-        if(selectedGpuYear) {
-            localStorage.setItem("selectedGpuYear", selectedGpuYear);
-        }
-    }, [selectedGpuYear]);
-
-
-    useEffect(() => {
        if(selectedGpuModel) {
            localStorage.setItem("selectedGpuModel", selectedGpuModel);
        }
     }, [selectedGpuModel]);
 
     useEffect(() => {
-       if(selectedDisplayResolution) {
-           localStorage.setItem("selectedDisplayResolution", selectedDisplayResolution);
-       }
-    }, [selectedDisplayResolution]);
-
-    useEffect(() => {
-        if (selectedSpec) {
-            localStorage.setItem("selectedSpec", selectedSpec);
+        if (selectedGame) {
+            localStorage.setItem("selectedGameId", String(selectedGame.id));
+        } else {
+            localStorage.removeItem("selectedGameId");
         }
-    }, [selectedSpec]);
+    }, [selectedGame]);
 
-
-    // Use a  loading, error, success pattern
-    // This is a common pattern in React for handling async data fetching
-
-    if (cpuLoading || gpuLoading || gameLoading || gameSpecLoading) {
+ 
+    if ( gpuLoading || gameLoading || gameSpecLoading) {
         return (
             <>
                 <h1>Loading...</h1>
@@ -184,19 +97,23 @@ function App() {
         )
     }
 
-    if (cpuError || gpuError || gameError || gameSpecError) {
+    if ( gpuError || gameError || gameSpecError) {
         return (
             <>
-                <h1>cpu Error(s): {cpuError.message}</h1>
                 <h1>gpu Error(s): {gpuError.message}</h1>
                 <h1>game Error(s): {gameError.message}</h1>
                 <h1>game Error(s): {gameSpecError.message}</h1>
             </>
         )
     }
+    // set derived values for data retrieval
 
-    // keys are used to tell react which item to update if data changes
-    // so we don't have to re-render the entire list
+    // this lets the page dsplay information about the user's graphics card
+    const selectedGameSpec = gameSpecs.find(spec => spec.spec === selectedSpec) || gameSpecs[0] || null;
+
+    // this lets the page display information about the game publisher's recommended/tested graphics card(s)
+    const recommendedGpu = gpus.find(gpu => String(gpu.id) === selectedGameSpec?.geforce_card_id) || null;
+
     return (
         <>
             <div className="layout">
@@ -205,68 +122,12 @@ function App() {
                     <table className="form-table">
                         <thead>
                         <tr>
-                            <th>CPU Manufacturer</th>
-                            <th>CPU Series</th>
-                            <th>CPU Model</th>
                             <th>GPU Manufacturer</th>
-                            <th>GPU Year</th>
                             <th>GPU Model</th>
-                            <th>Display Resolution</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>
-                                <select
-                                    id="cpu-manufacturer-select"
-                                    value={selectedCpuManufacturer}
-                                    onChange={(e) => {
-                                        setSelectedCpuManufacturer(e.target.value)
-                                        filterByCpuManufacturer(e.target.value)
-                                    }}
-                                >
-                                    <option value="">All Manufacturers</option>
-                                    {cpuManufacturers.map(manufacturer => (
-                                        <option key={manufacturer} value={manufacturer}>
-                                            {manufacturer}
-                                        </option>
-                                    ))}
-                                </select>
-                            </td>
-                            <td>
-                                <select
-                                    id="cpu-series-select"
-                                    value={selectedCpuSeries}
-                                    onChange={(e) => {
-                                        setSelectedCpuSeries(e.target.value)
-                                        filterByCpuSeries(e.target.value)
-                                    }}
-                                    disabled={!selectedCpuManufacturer}
-                                >
-                                    <option value="">All Series</option>
-                                    {cpuSeriesOptions.map(series => (
-                                        <option key={series} value={series}>
-                                            {series}
-                                        </option>
-                                    ))}
-                                </select>
-                            </td>
-
-                            <td>
-                                <select id="cpu-select"
-                                        value={selectedCpuModel}
-                                        onChange={(e) => {
-                                            setSelectedCpuModel(e.target.value)
-                                        }}
-                                >
-                                    {filteredCpus.map((cpu) => (
-                                        <option key={cpu.id} value={cpu.id}>
-                                            {cpu.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </td>
-
                             <td>
                                 <select
                                     id="gpu-manufacturer-select"
@@ -274,6 +135,7 @@ function App() {
                                     onChange={(e) => {
                                         setSelectedGpuManufacturer(e.target.value)
                                         filterByGpuManufacturer(e.target.value)
+                                        setSelectedGpu(null);
                                     }}
                                 >
                                     <option value="">All Manufacturers</option>
@@ -287,30 +149,13 @@ function App() {
 
                             <td>
                                 <select
-                                    id="gpu-year-select"
-                                    value={selectedGpuYear}
-                                    onChange={(e) => {
-                                        setSelectedGpuYear(e.target.value)
-                                        filterByGpuYear(e.target.value)
-                                    }}
-                                    disabled={!selectedGpuManufacturer}
-                                >
-                                    <option value="">All Years</option>
-                                    {gpuYearOptions.map(year => (
-                                        <option key={year} value={year}>
-                                            {year}
-                                        </option>
-                                    ))}
-                                </select>
-                            </td>
-
-
-                            <td>
-                                <select
                                     id="gpu-select"
                                     value={selectedGpuModel}
                                     onChange={(e) => {
                                         setSelectedGpuModel(e.target.value)
+                                        const gpu = filteredGpus.find(g => String(g.id) === e.target.value);
+                                        setSelectedGpu(gpu || null);
+
                                     }}
                                 >
                                     {filteredGpus.map((gpu) => (
@@ -320,44 +165,18 @@ function App() {
                                     ))}
                                 </select>
                             </td>
-                            <td>
-                                <select
-                                    id="resolution-select"
-                                    value={selectedDisplayResolution}
-                                    onChange={(e) => {
-                                        setSelectedDisplayResolution(e.target.value)
-                                    }}
-                                >
-                                    <option value="">Select a Resolution</option>
-                                    <optgroup label="High-End">
-                                        <option value="3840x2160">3840x2160 (4K UHD)</option>
-                                        <option value="3440x1440">3440x1440 (UltraWide QHD)</option>
-                                        <option value="2560x1440">2560x1440 (QHD)</option>
-                                    </optgroup>
-                                    <optgroup label="Mid-Range">
-                                        <option value="1920x1080">1920x1080 (Full HD)</option>
-                                        <option value="2560x1080">2560x1080 (UltraWide FHD)</option>
-                                        <option value="1600x900">1600x900 (HD+)</option>
-                                    </optgroup>
-                                    <optgroup label="Low-End">
-                                        <option value="1366x768">1366x768 (HD)</option>
-                                        <option value="1280x720">1280x720 (HD)</option>
-                                        <option value="1024x768">1024x768 (XGA)</option>
-                                    </optgroup>
-                                </select>
-                            </td>
                         </tr>
-                        </tbody>
+                      </tbody>
                     </table>
                 </div>
+
                 <div className={"container"}>
-                    <h2 className="">Game Check</h2>
+                    <h2 className="">Game</h2>
                     <table className="form-table">
                         <thead>
                         <tr>
                             <th>Desired Game</th>
                             <th>Game Hardware Specification</th>
-                            <th>System Compatibility</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -365,9 +184,11 @@ function App() {
                             <td>
                                 <select
                                     id="game-select"
-                                    value={selectedGame.id}
+                                    value={selectedGame?.id}
                                     onChange={(e) => {
-                                        setSelectedGame({id: e.target.value});
+                                        setSelectedSpec(SPEC_MINIMUM);
+                                        const game = games.find(g => String(g.id) === e.target.value) || null;
+                                        setSelectedGame(game);
                                     }}
                                 >
                                     <option value="">All Games</option>
@@ -386,6 +207,7 @@ function App() {
                                             name="spec"
                                             value="1"
                                             onChange={() => setSelectedSpec(SPEC_MINIMUM)}
+                                            checked={selectedSpec === SPEC_MINIMUM}
                                         />
                                         Minimum
                                     </label>
@@ -395,37 +217,94 @@ function App() {
                                             name="spec"
                                             value="2"
                                             onChange={() => setSelectedSpec(SPEC_RECOMMENDED)}
+                                            checked={selectedSpec === SPEC_RECOMMENDED}
                                         />
                                         Recommended
                                     </label>
                                 </div>
                             </td>
-                            <td>
-                                <span className="compatibilityCheck">Yes</span>
-                            </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                <div className="container">
-                    <h2>Game Specifications</h2>
-                    <table className="form-table">
+
+                <div className={"container"}>
+                    <h2 className="">Compatibility Check</h2>
+                    <table>
                         <thead>
                         <tr>
-                            <th>Spec Details</th>
+                            <th></th>
+                            <th>fps 1080p medium</th>
+                            <th>fps 1080p ultra</th>
+                            <th>fps 1440p ultra</th>
+                            <th>fps 4K ultra</th>
                         </tr>
                         </thead>
                         <tbody>
+                        <tr>
+                            <td>Your Card</td>
+                            <td>{selectedGpu?.fps_1080p_medium || 'N/A'}</td>
+                            <td>{selectedGpu?.fps_1080p_ultra || 'N/A'}</td>
+                            <td>{selectedGpu?.fps_1440p_ultra || 'N/A'}</td>
+                            <td>{selectedGpu?.fps_4k_ultra || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <td>{selectedGame?.name || 'N/A'}</td>
+                            <td>{selectedGameSpec?.geforce_fps?.["1080p_medium"] || 'N/A'}</td>
+                            <td>{selectedGameSpec?.geforce_fps?.["1080p_ultra"] || 'N/A'}</td>
+                            <td>{selectedGameSpec?.geforce_fps?.["1440p_ultra"] || 'N/A'}</td>
+                            <td>{selectedGameSpec?.geforce_fps?.["4k_ultra"] || 'N/A'}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                            <tr><td>
-   </td></tr>
-
-
-                        {gameSpecs.map((spec, index) => (
-                            <tr key={index}>
-                                <td>{JSON.stringify(spec)}</td>
+                <div className="container">
+                    <h2>Game Publisher's Suggestion</h2>
+                    <table className="form-table">
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Value</th>
                             </tr>
-                        ))}
+                        </thead>
+                        <tbody>
+                            {selectedGameSpec && selectedGameSpec.geforce_card_id ? (
+                                <>
+                                    <tr>
+                                        <td>Card Name</td>
+                                        <td>{recommendedGpu?.name || 'N/A'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Specification Type</td>
+                                        <td>{selectedGameSpec.spec === 1 ? "Minimum" : "Recommended"}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Recommended GPU ID</td>
+                                        <td>{selectedGameSpec.geforce_card_id}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>FPS @ 1080p Medium</td>
+                                        <td>{selectedGameSpec.geforce_fps?.["1080p_medium"] || 'N/A'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>FPS @ 1080p Ultra</td>
+                                        <td>{selectedGameSpec.geforce_fps?.["1080p_ultra"] || 'N/A'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>FPS @ 1440p Ultra</td>
+                                        <td>{selectedGameSpec.geforce_fps?.["1440p_ultra"] || 'N/A'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>FPS @ 4K Ultra</td>
+                                        <td>{selectedGameSpec.geforce_fps?.["4k_ultra"] || 'N/A'}</td>
+                                    </tr>
+                                </>
+                            ) : (
+                                <tr>
+                                    <td colSpan="2">No publisher recommendations found.</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

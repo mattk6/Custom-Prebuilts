@@ -31,19 +31,30 @@ class GameSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class GameSpecSerializer(serializers.ModelSerializer):
-    spec_description = serializers.SerializerMethodField()
-    game_name = serializers.ReadOnlyField(source='game.name')  # Access the `name` field in the linked `Game` object
+    game_name = serializers.ReadOnlyField(source='game.name')
+    geforce_fps = serializers.SerializerMethodField()
 
     class Meta:
         model = GameSpec
         # put fields in a preferred order
-        fields = ['id', 'game', 'game_name', 'spec','spec_description', 'geforce', 'radeon', 'arc', 'fps', 'resolution', 'preset']
+        fields = ['id', 'game', 'game_name', 'spec', 'geforce_card_id',
+                  'fps', 'resolution', 'preset',
+                  'geforce_fps']
 
-    def get_spec_description(self, obj):
+
+    def get_geforce_fps(self, obj):
+        return self.get_gpu_fps(obj.geforce_card_id)
+
+    def get_gpu_fps(self, gpu_id):
         try:
-            spec = Spec.objects.get(spec=obj.spec)
-            return spec.description
-        except Spec.DoesNotExist:
-            return None
+            gpu = PartsGPU.objects.get(id=gpu_id)
+            return {
+                "1080p_medium": gpu.fps_1080p_medium,
+                "1080p_ultra": gpu.fps_1080p_ultra,
+                "1440p_ultra": gpu.fps_1440p_ultra,
+                "4k_ultra": gpu.fps_4k_ultra
+            }
+        except PartsGPU.DoesNotExist:
+            return None        
 
  
