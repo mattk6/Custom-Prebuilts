@@ -52,7 +52,6 @@ function App() {
             setSelectedGpuModel(storedGpuModel);
 
             const gpu = gpus.find(g => String(g.id) === storedGpuModel);
-            console.log("gpus count: " + gpus.length);
             setSelectedGpu(gpu || null);
         }
     }, [gpus]);
@@ -69,7 +68,6 @@ function App() {
     // save values to local storage as values change
     useEffect(() => {
        if(selectedGpuManufacturer && selectedGpuManufacturer!=="") {
-           console.log("Saving GPU Manufacturer:", selectedGpuManufacturer);
            localStorage.setItem("selectedGpuManufacturer", selectedGpuManufacturer);
        }
     }, [selectedGpuManufacturer]);
@@ -110,10 +108,9 @@ function App() {
 
     // this lets the page display information about the user's graphics card
     const selectedGameSpec = gameSpecs.find(spec => spec.game === selectedGame?.id && spec.spec === selectedSpec) || null;
-    console.log("selected game: ", JSON.stringify(selectedGameSpec, null, 2));
+    
     // this lets the page display information about the game publisher's recommended/tested graphics card(s)
     const recommendedGpu = gpus.find(gpu => String(gpu.id) === String(selectedGameSpec?.geforce_card_id)) || null;
-    console.log("recommended GPU: ", recommendedGpu);
 
     // provide cell indicators for card specs
     const getComparisonIndicator = (userFps, gameFps) => {

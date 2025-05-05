@@ -9,7 +9,7 @@ from django.db import models
 
 # list of games from steam store
 class Game(models.Model):
-    steam_store_id = models.IntegerField() # Steam Store ID
+    steam_store_id = models.IntegerField()
     name = models.CharField(max_length=100)
 
     def __str__(self):
