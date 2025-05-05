@@ -263,7 +263,7 @@ function App() {
                                 const gameFps = selectedGameSpec?.geforce_fps?.[key.replace('fps_', '')] || 'N/A';
                                 const indicator = getComparisonIndicator(userFps, gameFps);
                                 return (
-                                    <td key={key}>
+                                    <td key={key}> 
                                         {userFps}
                                         {indicator && (
                                             <span className={indicator.className} data-tooltip={indicator.tooltip}>
@@ -297,10 +297,6 @@ function App() {
                                     <tr>
                                         <td>Specification Type</td>
                                         <td>{selectedGameSpec.spec === 1 ? "Minimum" : "Recommended"}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Recommended GPU ID</td>
-                                        <td>{selectedGameSpec.geforce_card_id}</td>
                                     </tr>
                                     <tr>
                                         <td>FPS @ 1080p Medium</td>
