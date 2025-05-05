@@ -118,3 +118,30 @@ input[type="radio"] {
     accent-color: #bbb;
   }
 }
+
+.exceeds {
+  color: green;
+  font-weight: bold;
+}
+
+.close {
+  color: orange;
+  font-weight: bold;
+}
+
+.short {
+  color: red;
+  font-weight: bold;
+}
+
+.exceeds-bg {
+  background-color: rgba(0, 128, 0, 0.2);
+}
+
+.close-bg {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.short-bg {
+  background-color: rgba(255, 0, 0, 0.2);
+}

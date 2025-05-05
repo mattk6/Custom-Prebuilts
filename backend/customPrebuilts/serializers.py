@@ -41,20 +41,13 @@ class GameSpecSerializer(serializers.ModelSerializer):
                   'fps', 'resolution', 'preset',
                   'geforce_fps']
 
-
+    # supply card ratings in the payload
     def get_geforce_fps(self, obj):
-        return self.get_gpu_fps(obj.geforce_card_id)
-
-    def get_gpu_fps(self, gpu_id):
-        try:
-            gpu = PartsGPU.objects.get(id=gpu_id)
-            return {
-                "1080p_medium": gpu.fps_1080p_medium,
-                "1080p_ultra": gpu.fps_1080p_ultra,
-                "1440p_ultra": gpu.fps_1440p_ultra,
-                "4k_ultra": gpu.fps_4k_ultra
-            }
-        except PartsGPU.DoesNotExist:
-            return None        
-
- 
+        if not obj.geforce_card:
+            return None
+        return {
+            "1080p_medium": obj.geforce_card.fps_1080p_medium,
+            "1080p_ultra": obj.geforce_card.fps_1080p_ultra,
+            "1440p_ultra": obj.geforce_card.fps_1440p_ultra,
+            "4k_ultra": obj.geforce_card.fps_4k_ultra
+        }

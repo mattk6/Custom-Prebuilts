@@ -1,17 +1,15 @@
 """
 views.py
 Matthew Kruse
-2025-04-13
+2025-04-17
 
 
 """
 from rest_framework.viewsets import ReadOnlyModelViewSet
-import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import PartsGPU, PartsCPU, PartsMotherboard, Game, GameSpec
 from .serializers import PartsGPUSerializer, PartsCPUSerializer, PartsMotherboardSerializer, GameSerializer, GameSpecSerializer
-
 
 # GPU Views
 class PartsGPUViewSet(ReadOnlyModelViewSet):
@@ -37,6 +35,4 @@ class GameSpecViewSet(ReadOnlyModelViewSet):
     queryset = GameSpec.objects.all()
     serializer_class = GameSpecSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['game', 'spec']
-
- 
+    filterset_fields = ['game__id', 'spec']

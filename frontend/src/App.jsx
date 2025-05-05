@@ -88,7 +88,7 @@ function App() {
         }
     }, [selectedGame]);
 
- 
+
     if ( gpuLoading || gameLoading || gameSpecLoading) {
         return (
             <>
@@ -108,11 +108,29 @@ function App() {
     }
     // set derived values for data retrieval
 
-    // this lets the page dsplay information about the user's graphics card
-    const selectedGameSpec = gameSpecs.find(spec => spec.spec === selectedSpec) || gameSpecs[0] || null;
-
+    // this lets the page display information about the user's graphics card
+    const selectedGameSpec = gameSpecs.find(spec => spec.game === selectedGame?.id && spec.spec === selectedSpec) || null;
+    console.log("selected game: ", JSON.stringify(selectedGameSpec, null, 2));
     // this lets the page display information about the game publisher's recommended/tested graphics card(s)
-    const recommendedGpu = gpus.find(gpu => String(gpu.id) === selectedGameSpec?.geforce_card_id) || null;
+    const recommendedGpu = gpus.find(gpu => String(gpu.id) === String(selectedGameSpec?.geforce_card_id)) || null;
+    console.log("recommended GPU: ", recommendedGpu);
+
+    // provide cell indicators for card specs
+    const getComparisonIndicator = (userFps, gameFps) => {
+      if (!userFps || !gameFps || gameFps === 'N/A') return null; 
+      const user = parseFloat(userFps);
+      const game = parseFloat(gameFps);
+      // 10% threshold for "close enough"
+      const threshold = 0.1; 
+
+      if (user >= game * (1 - threshold)) {
+        return { symbol: '✔', className: 'exceeds' }; // Exceeds or close enough (green check)
+      } else if (user >= game * (1 - threshold * 2)) {
+        return { symbol: '~', className: 'close' }; // Close enough (yellow ~)
+      } else {
+        return { symbol: '✘', className: 'short' }; // Falls short (red X)
+      }
+    };
 
     return (
         <>
@@ -243,17 +261,21 @@ function App() {
                         <tbody>
                         <tr>
                             <td>Your Card</td>
-                            <td>{selectedGpu?.fps_1080p_medium || 'N/A'}</td>
-                            <td>{selectedGpu?.fps_1080p_ultra || 'N/A'}</td>
-                            <td>{selectedGpu?.fps_1440p_ultra || 'N/A'}</td>
-                            <td>{selectedGpu?.fps_4k_ultra || 'N/A'}</td>
-                        </tr>
-                        <tr>
-                            <td>{selectedGame?.name || 'N/A'}</td>
-                            <td>{selectedGameSpec?.geforce_fps?.["1080p_medium"] || 'N/A'}</td>
-                            <td>{selectedGameSpec?.geforce_fps?.["1080p_ultra"] || 'N/A'}</td>
-                            <td>{selectedGameSpec?.geforce_fps?.["1440p_ultra"] || 'N/A'}</td>
-                            <td>{selectedGameSpec?.geforce_fps?.["4k_ultra"] || 'N/A'}</td>
+                            {['fps_1080p_medium', 'fps_1080p_ultra', 'fps_1440p_ultra', 'fps_4k_ultra'].map((key) => {
+                                const userFps = selectedGpu?.[key] || 'N/A';
+                                const gameFps = selectedGameSpec?.geforce_fps?.[key.replace('fps_', '')] || 'N/A';
+                                const indicator = getComparisonIndicator(userFps, gameFps);
+                                return (
+                                    <td key={key}>
+                                        {userFps}
+                                        {indicator && (
+                                            <span className={indicator.className} data-tooltip={indicator.tooltip}>
+                                                {indicator.symbol}
+                                            </span>
+                                        )}
+                                    </td>
+                                );
+                            })}
                         </tr>
                         </tbody>
                     </table>
@@ -263,14 +285,14 @@ function App() {
                     <h2>Game Publisher's Suggestion</h2>
                     <table className="form-table">
                         <thead>
-                            <tr>
-                                <th>Field</th>
-                                <th>Value</th>
-                            </tr>
+                        <tr>
+                            <th>Field</th>
+                            <th>Value</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {selectedGameSpec && selectedGameSpec.geforce_card_id ? (
-                                <>
+                        {selectedGameSpec && selectedGameSpec.geforce_card_id ? (
+                            <>
                                     <tr>
                                         <td>Card Name</td>
                                         <td>{recommendedGpu?.name || 'N/A'}</td>

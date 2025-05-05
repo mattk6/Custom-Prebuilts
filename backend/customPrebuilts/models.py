@@ -5,10 +5,7 @@ Matthew Kruse
 
 
 """
-
-
 from django.db import models
-
 
 # list of games from steam store
 class Game(models.Model):
@@ -18,25 +15,12 @@ class Game(models.Model):
     def __str__(self):
         return self.name
 
-# specification for game hardware requirement based on Spec
-class GameSpec(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    spec = models.IntegerField()
-    geforce_card_id = models.CharField(max_length=50, blank=True)
-    radeon_card_id = models.CharField(max_length=50, blank=True)
-    fps = models.IntegerField(blank=True, null=True)
-    resolution = models.CharField(max_length=50, blank=True, null=True)
-    preset = models.CharField(max_length=50, blank=True, null=True)
-
-    def __str__(self):
-        return self.game.name
-
 # game play specification, e.g. 1 = minimum, 2 = recommended
 class Spec(models.Model):
     spec = models.IntegerField(unique=True)
     description = models.CharField(max_length=20)
- 
 
+# list of gpu models and their specs
 class PartsGPU(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -63,7 +47,7 @@ class PartsGPU(models.Model):
     def __str__(self):
         return self.name
 
-# list of cpu models and their specs 
+# list of cpu models and their specs
 class PartsCPU(models.Model):
     name = models.CharField(max_length=100)
     manufacturer = models.CharField(max_length=50)
@@ -81,18 +65,29 @@ class PartsCPU(models.Model):
                 fields=['name', 'manufacturer', 'core_count', 'core_speed', 'socket', 'photo'])
         ]
 
-
     def __str__(self):
         return self.name
 
-# list of motherboard models and their specs
+# list of motherboards and their specs
 class PartsMotherboard(models.Model):
-    name = models.CharField(max_length=100)  # Motherboard name
-    manufacturer = models.CharField(max_length=50)  #  Manufacturer
-    msrp = models.FloatField(null=True, blank=True)  # MSRP (nullable)
-    nvme_slot_count = models.PositiveIntegerField(null=True, blank=True)  # NVME Slot Count
-    ethernet = models.FloatField(null=True, blank=True)  # ethernet speed (nullable)
-    photo = models.URLField(max_length=200, null=True, blank=True) # Image / could be url....
+    name = models.CharField(max_length=100)
+    manufacturer = models.CharField(max_length=50)
+    msrp = models.FloatField(null=True, blank=True)
+    nvme_slot_count = models.PositiveIntegerField(null=True, blank=True)
+    ethernet = models.FloatField(null=True, blank=True)
+    photo = models.URLField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.name
+
+# specification for game hardware requirement based on Spec
+class GameSpec(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    spec = models.IntegerField()
+    geforce_card = models.ForeignKey(PartsGPU, on_delete=models.SET_NULL, null=True, blank=True)
+    fps = models.IntegerField(blank=True, null=True)
+    resolution = models.CharField(max_length=50, blank=True, null=True)
+    preset = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return self.game.name
