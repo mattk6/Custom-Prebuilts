@@ -76,7 +76,7 @@ Prerequisites:
 
 Setup:
 1. Open a terminal window dedicated to backend operations
-2. Navigate to the backend directory:   ```bash   cd Reminders/backend   ```
+2. Navigate to the backend directory:   ```bash   cd Custom-Prebuilts/backend   ```
 3. Set up a virtual environment and activate it. See the following for Mac/Unix like systems
    ```bash
    python -m venv venv
@@ -100,7 +100,7 @@ Setup
 1. Open a separate terminal for frontend operations
 2. Navigate to the frontend directory:
    ```bash
-   cd Reminders/frontend
+   cd Custom-Prebuilts/frontend
    ```
 3. Install dependencies:
    ```bash
@@ -119,7 +119,7 @@ Access the application at [http://localhost:5173](http://localhost:5173)
 1. **Select GPU Hardware**:
    - Select a GPU Manufacturer and GPU Model from the Your Setup table
 
-2. **Add Reminders**:
+2. **Add Custom-Prebuilts**:
    - Select a Game and a Game Hardware Specification from the Game table
 
 3. **Review Findings**:
